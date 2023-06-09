@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import Table from "@/components/Table";
 import Tabs from "@/components/Tabs";
@@ -94,7 +95,6 @@ const Home = (props: Props) => {
   const router = useRouter();
   const coinList = props.data.coins ?? [];
   const tableProps = { columns, data: coinList };
-  console.log({ coinList });
 
   const handleRowClick = (data: any) => router.push(`/coin/${data.CN_Id}`);
 

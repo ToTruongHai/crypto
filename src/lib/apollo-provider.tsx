@@ -5,12 +5,15 @@ import {
   ApolloLink,
   HttpLink,
   SuspenseCache,
+  split,
 } from "@apollo/client";
+
+import { getMainDefinition } from "@apollo/client/utilities";
 import {
   ApolloNextAppProvider,
   NextSSRInMemoryCache,
-  SSRMultipartLink,
 } from "@apollo/experimental-nextjs-app-support/ssr";
+import { WebSocketLink } from "@apollo/client/link/ws";
 
 function makeClient() {
   const httpLink = new HttpLink({
@@ -20,17 +23,37 @@ function makeClient() {
     },
   });
 
+  const wsLink = new WebSocketLink({
+    uri: "wss://graphql-crypto.onrender.com/graphql",
+    options: {
+      reconnect: true,
+    },
+  });
+
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === "OperationDefinition" &&
+        definition.operation === "subscription"
+      );
+    },
+    wsLink,
+    httpLink
+  );
+
   return new ApolloClient({
     cache: new NextSSRInMemoryCache(),
-    link:
-      typeof window === "undefined"
-        ? ApolloLink.from([
-            new SSRMultipartLink({
-              stripDefer: true,
-            }),
-            httpLink,
-          ])
-        : httpLink,
+    // link:
+    //   typeof window === "undefined"
+    //     ? ApolloLink.from([
+    //         new SSRMultipartLink({
+    //           stripDefer: true,
+    //         }),
+    //         httpLink,
+    //       ])
+    //     : httpLink,
+    link: ApolloLink.from([splitLink]),
   });
 }
 

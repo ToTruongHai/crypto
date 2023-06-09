@@ -13,7 +13,7 @@ type Wallet = {
 };
 
 type Props = {
-  onRadioSelect: (value: any) => {} | void;
+  onRadioSelect?: (value: any) => {} | void;
   walletOptions: Wallet[];
   defaultWallet?: string | number;
   selectable?: boolean;
@@ -24,7 +24,7 @@ type Props = {
 
 const WalletBox = ({
   walletOptions,
-  onRadioSelect,
+  onRadioSelect = () => {},
   defaultWallet,
   selectable = false,
   className,
@@ -44,9 +44,6 @@ const WalletBox = ({
 
   const renderBox = useMemo(() => {
     return walletOptions?.map((item, index) => {
-      const checkedProps = {
-        checked: selectedOption === item.WL_Id.toString(),
-      };
       return (
         <div
           key={index}
@@ -54,9 +51,12 @@ const WalletBox = ({
           onClick={() => handleOptionChange(item.WL_Id.toString())}
         >
           <div className="flex items-center gap-3">
-            <div className="mr-5">
+            <div
+              className="mr-5"
+              style={{ borderRadius: "50%", overflow: "hidden" }}
+            >
               <img
-                style={{ borderRadius: "50%" }}
+                className="scale-150"
                 src={item.WL_Image}
                 alt="..."
                 width={50}
@@ -68,8 +68,9 @@ const WalletBox = ({
                 <input
                   type="radio"
                   value={item.WL_Id.toString()}
-                  {...checkedProps}
+                  checked={selectedOption === item.WL_Id.toString()}
                   className={`${item.className} w-5 h-5 mr-2`}
+                  onChange={() => {}}
                 />
               ) : (
                 <></>
@@ -83,7 +84,7 @@ const WalletBox = ({
           {displayAddFund ? (
             <div>
               <Button type="button" onClick={() => handleAddFund(item.WL_Id)}>
-                Add Fund
+                Deposite
               </Button>
             </div>
           ) : (

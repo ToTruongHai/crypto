@@ -7,6 +7,7 @@ import login from "./user/login";
 import createWallet from "./wallet/createWallet";
 import depositWallet from "./wallet/depositWallet";
 import getWallets from "./wallet/getWallets";
+import subscriptionGet from "./wallet/subscriptionGet";
 
 const query = {
   ...getCoins.query,
@@ -23,7 +24,9 @@ const mutation = {
   ...depositWallet.mutation,
 };
 
-const subscription = {};
+const subscription = {
+  ...subscriptionGet.subscription,
+};
 
 const graphqlActions = {
   query,

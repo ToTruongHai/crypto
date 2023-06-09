@@ -12,7 +12,12 @@ import graphqlActions from "@/graphql";
 import useRefForm from "@/hooks/useRefForm";
 import { currencyData } from "@/ultis/constants";
 import { getCurrencyIcon, isEmpty } from "@/ultis/helpers";
-import { useMutation, useQuery } from "@apollo/client";
+import {
+  useLazyQuery,
+  useMutation,
+  useQuery,
+  useSubscription,
+} from "@apollo/client";
 import React, { useState } from "react";
 
 type Props = {};
@@ -59,7 +64,7 @@ const Wallet = (props: Props) => {
     return (
       <WalletBox
         onRadioSelect={handleOnRadioSelect}
-        walletOptions={data?.userId?.wallets}
+        walletOptions={data?.walletOfUser}
         className="py-4"
         displayAddFund={true}
         handleAddFund={(walletId) => setModalAddFund({ open: true, walletId })}
@@ -101,6 +106,16 @@ const Wallet = (props: Props) => {
         },
       },
     });
+  };
+
+  const renderSelect = () => {
+    const getExistCurrencyInWallet = data?.walletOfUser?.map(
+      (item: any) => item.WL_Currency
+    );
+    const _currencyData = currencyData.filter(
+      (item: any) => !getExistCurrencyInWallet?.includes(item.name)
+    );
+    return <Select.Default data={_currencyData} defaultValue="VND" />;
   };
 
   return (
@@ -175,7 +190,7 @@ const Wallet = (props: Props) => {
                 },
               ]}
             >
-              <Select.Default data={currencyData} defaultValue="VND" />
+              {renderSelect()}
             </FormItem>
             <FormItem
               name="amount"

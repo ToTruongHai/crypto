@@ -1,7 +1,7 @@
 "use client";
 import React, { useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, useSubscription } from "@apollo/client";
 import graphqlActions from "@/graphql";
 import WalletBox from "@/components/WalletBox";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
@@ -19,6 +19,7 @@ type Props = {};
 const getWalletsQuery = graphqlActions.query.getWallets;
 const buyCoinMutation = graphqlActions.mutation.buyCoin;
 const getCoinQuery = graphqlActions.query.getCoin(GET_FULL_COIN_DETAIL);
+const getWalletsSubscription = graphqlActions.subscription.subscriptionGet;
 
 const Payment = (props: Props) => {
   const [quantity, setQuantity] = useState<any>("0");
@@ -29,17 +30,19 @@ const Payment = (props: Props) => {
     typeof window !== "undefined" ? localStorage.getItem("id") : null;
   const router = useRouter();
 
-  const { data, loading } = useQuery(getWalletsQuery, {
-    onCompleted: (data) => {},
+  const { data: realTimeData, loading: realTimeLoading } = useSubscription(
+    getWalletsSubscription
+  );
+
+  useQuery(getWalletsQuery, {
     variables: {
       userId: userId,
     },
   });
 
-  const [radio, setRadio] = useState(data?.userId?.wallets[0]?.WL_Id);
+  const [radio, setRadio] = useState(realTimeData?.walletOfUser[0]?.WL_Id);
 
   const { data: coinData, loading: coinLoading } = useQuery(getCoinQuery, {
-    onCompleted: (data) => {},
     variables: {
       coinId,
     },
@@ -84,12 +87,12 @@ const Payment = (props: Props) => {
         </div>
         <div className="w-3/5 flex flex-col gap-5">
           <div className="border border-blue-400 p-5 rounded">
-            {!loading ? (
+            {!realTimeLoading ? (
               <WalletBox
                 onRadioSelect={handleOnRadioSelect}
-                walletOptions={data?.userId?.wallets}
+                walletOptions={realTimeData?.walletOfUser}
                 selectable={true}
-                defaultWallet={data?.userId?.wallets[0]?.WL_Id}
+                defaultWallet={realTimeData?.walletOfUser?.[0]?.WL_Id}
               />
             ) : (
               <LoadingSkeleton />

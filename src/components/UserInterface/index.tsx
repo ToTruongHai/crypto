@@ -18,6 +18,7 @@ const UserInterface = ({ userInfo, handleLogout }: Props) => {
   return (
     <div className="relative">
       <button
+        cy-profile="user"
         className="flex items-center justify-center rounded-full h-10 w-10 bg-gray-300 hover:bg-gray-400 focus:outline-none"
         onClick={toggleDropdown}
       >
