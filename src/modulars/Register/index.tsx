@@ -19,6 +19,7 @@ const Register = (props: Props) => {
   return (
     <div>
       <h3>Sign Up</h3>
+      <span>Not yet implement</span>
       <Form form={form} onSubmit={handleSubmit}>
         <FormItem
           label="email"

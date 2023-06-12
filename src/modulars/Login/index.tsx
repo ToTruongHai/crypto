@@ -8,7 +8,7 @@ import useRefForm from "@/hooks/useRefForm";
 import { isEmpty } from "@/ultis/helpers";
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 
 type Props = {};
 
@@ -17,6 +17,8 @@ const loginMutation = graphqlActions.mutation.login;
 const Login = (props: Props) => {
   const [form] = useRefForm();
   const router = useRouter();
+  const [showError, setShowError] = useState(false);
+  const [showEmail, setShowEmail] = useState(false);
 
   const [loginUser] = useMutation(loginMutation, {
     onCompleted: (dataReturn) => {
@@ -25,7 +27,12 @@ const Login = (props: Props) => {
         localStorage.setItem("name", dataReturn.login.US_Name);
         localStorage.setItem("id", dataReturn.login.US_Id);
         router.push("/");
+        setShowError(false);
       }
+      setShowError(true);
+    },
+    onError: () => {
+      setShowError(true);
     },
   });
 
@@ -43,8 +50,23 @@ const Login = (props: Props) => {
     });
   };
   return (
-    <div>
+    <div className="relative">
       <h3>Sign In</h3>
+      <Button className="absolute" style={{ top: -250 }} type="button" onClick={() => setShowEmail((prevState) => !prevState)}>
+        show email password
+      </Button>
+      {showEmail ? (
+        <div className="absolute border rounded border-green-500 p-5" style={{ top: -200 }}>
+          <p>
+            <span className="text-lime-500">Email:</span> haito@gmail.com
+          </p>
+          <p>
+            <span className="text-lime-500">Password:</span> Haito_123*
+          </p>
+        </div>
+      ) : (
+        <></>
+      )}
       <Form form={form} onSubmit={handleSubmit}>
         <FormItem
           label="email"
@@ -77,6 +99,15 @@ const Login = (props: Props) => {
 
         <Button type="submit">submit</Button>
       </Form>
+      {showError ? (
+        <div className="pt-5">
+          <span className="errorMessage text-red-500">
+            Email or password is wrong!
+          </span>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
