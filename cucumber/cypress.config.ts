@@ -11,6 +11,7 @@ async function setupNodeEvents(
 ): Promise<Cypress.PluginConfigOptions> {
   // This is required for the preprocessor to be able to generate JSON reports after each run, and more,
   await addCucumberPreprocessorPlugin(on, config);
+  // config.supportFile = "cypress/e2e/integration/*.ts";
 
   on(
     "file:preprocessor",
