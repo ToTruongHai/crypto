@@ -35,6 +35,7 @@ const Payment = (props: Props) => {
   );
 
   useQuery(getWalletsQuery, {
+    skip: isEmpty(userId),
     variables: {
       userId: userId,
     },
@@ -72,6 +73,57 @@ const Payment = (props: Props) => {
 
   const handleUpdatePrice = (data: any) => setQuantity(data);
 
+  const renderProcess = useMemo(() => {
+    if (isEmpty(userId)) return <div className="border border-yellow-500 p-5 w-full text-center"> <h3 className="errorLogin text-2xl text-red-500 bold">Must Login To Make Payment</h3></div>
+    return (
+      <div className="w-3/5 flex flex-col gap-5">
+        <div className="border border-blue-400 p-5 rounded">
+          {!realTimeLoading ? (
+            <WalletBox
+              onRadioSelect={handleOnRadioSelect}
+              walletOptions={realTimeData?.walletOfUser}
+              selectable={true}
+              defaultWallet={realTimeData?.walletOfUser?.[0]?.WL_Id}
+            />
+          ) : (
+            <LoadingSkeleton />
+          )}
+        </div>
+        <div className="border border-blue-400 p-5 rounded h-full">
+          <Form form={form} onSubmit={handleOnSubmit}>
+            <FormItem
+              label="Quantity"
+              name="quantity"
+              rules={[
+                {
+                  required: {
+                    value: true,
+                    message: "Please choose quantity",
+                  },
+                },
+              ]}
+            >
+              <Input
+                defaultValue={0}
+                type="number"
+                onBlur={handleUpdatePrice}
+              />
+            </FormItem>
+
+            <div className="py-5">
+              <span>Total Price: </span>
+              <span>
+                {(coinData?.coin.CN_Price * quantity).toLocaleString()} USD
+              </span>
+            </div>
+            <Button type="submit" className="pointer">
+              Buy
+            </Button>
+          </Form>
+        </div>
+      </div>
+    );
+  }, [userId]);
   return (
     <div>
       <h3 className="p-5 mb-10 text-5xl text-center">
@@ -85,52 +137,7 @@ const Payment = (props: Props) => {
             <LoadingSkeleton />
           )}
         </div>
-        <div className="w-3/5 flex flex-col gap-5">
-          <div className="border border-blue-400 p-5 rounded">
-            {!realTimeLoading ? (
-              <WalletBox
-                onRadioSelect={handleOnRadioSelect}
-                walletOptions={realTimeData?.walletOfUser}
-                selectable={true}
-                defaultWallet={realTimeData?.walletOfUser?.[0]?.WL_Id}
-              />
-            ) : (
-              <LoadingSkeleton />
-            )}
-          </div>
-          <div className="border border-blue-400 p-5 rounded h-full">
-            <Form form={form} onSubmit={handleOnSubmit}>
-              <FormItem
-                label="Quantity"
-                name="quantity"
-                rules={[
-                  {
-                    required: {
-                      value: true,
-                      message: "Please choose quantity",
-                    },
-                  },
-                ]}
-              >
-                <Input
-                  defaultValue={0}
-                  type="number"
-                  onBlur={handleUpdatePrice}
-                />
-              </FormItem>
-
-              <div className="py-5">
-                <span>Total Price: </span>
-                <span>
-                  {(coinData?.coin.CN_Price * quantity).toLocaleString()} USD
-                </span>
-              </div>
-              <Button type="submit" className="pointer">
-                Buy
-              </Button>
-            </Form>
-          </div>
-        </div>
+        {renderProcess}
       </div>
     </div>
   );

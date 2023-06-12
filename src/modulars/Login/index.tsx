@@ -29,7 +29,6 @@ const Login = (props: Props) => {
         router.push("/");
         setShowError(false);
       }
-      setShowError(true);
     },
     onError: () => {
       setShowError(true);

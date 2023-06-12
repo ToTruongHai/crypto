@@ -34,7 +34,7 @@ const columns = [
             borderRadius: "50%",
           }}
         />
-        <span style={{ height: "fit-content" }}>{text}</span>
+        <span className={`${text}`} style={{ height: "fit-content" }}>{text}</span>
       </div>
     ),
   },

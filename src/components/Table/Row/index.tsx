@@ -118,10 +118,11 @@ const Row = ({
     if (isEmpty(rows)) return;
     return rows?.map((item: any, index: any) => {
       const isChecked = chkbox?.includes(item?.key);
+      const isHaveCustomClass = isEmpty(item.className);
       return (
         <tr
           key={index}
-          className={`${className}`}
+          className={`${className} ${isHaveCustomClass ? item.className : ''}`}
           id={closestId} // @@@ need this for drag @@@
           {...dragDropAttribute} // @@@ need this for drag @@@
           onClick={() => onRowClick(item)}
